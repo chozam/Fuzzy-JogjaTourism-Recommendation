@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekomendasi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav
+        class="d-flex flex-column flex-lg-row w-100 h-auto h-xl-100 px-2 px-sm-4 px-md-5 py-4 py-md-4 justify-content-between gap-2">
+        <ul class="nav nav-underline fs-lg-7 fs-5 mx-auto mx-lg-0">
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'index' else '' }}" aria-current="page"
+                    href="{{ url_for('index') }}" style="cursor: pointer;">Beranda</a>
+            </li>
+            <li class=" nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'rekomendasi' else '' }}" aria-current="page"
+                    href="{{ url_for('rekomendasi') }}" "
+                    style=" cursor: pointer;">Rekomendasi</a>
+            </li>
+        </ul>
+        <button class="btn btn-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+            aria-controls="offcanvasRight">Pilihan Pengguna</button>
+    </nav>
+    <section id="section"
+        class="d-flex flex-column flex-lg-row w-100 h-auto h-xl-100 px-2 px-sm-4 px-md-5 py-4 py-md-4">
+
+        <div class="row row-cols-1 row-cols-md-3 g-4 h-100">
+            {% for index, item in items.iterrows(): %}
+            <div class="col">
+                <div class="card h-100 d-flex, flex-column">
+                    <img src={{ item['Gambar'] }} class="card-img-top img-fluid w-auto" alt="..."
+                        style="object-fit: cover; height: 250px;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ item['Nama_Wisata'] }}</h5>
+                        <p class="card-text">Harga : Rp {{ '{:,.0f}'.format(item['Harga']).replace(',', '.')}}</p>
+                        <p class="card-text">Fasilitas: {{ item['Keterangan_Fasilitas'] }}</p>
+                        <a class="btn btn-primary mt-auto w-100 w-lg-50"
+                            href="{{ url_for('detail', nama_wisata = item['Nama_Wisata']) }}">Lihat Selengkapnya</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form action="{{ url_for('hitung') }}" method="post">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
+                aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Pilihan Pengguna</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-end px-4 my-1">
+                    <p class="lead">Pilih Operator</p>
+                    <select class="form-select" aria-label="Pilih Operator" name="Operator" required>
+                        <option selected value="" disabled>Operator</option>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                    </select>
+                </div>
+
+                {% for k,v in variabel.items(): %}
+                <div class="offcanvas-end px-4 my-1">
+                    <p class="lead">Pilih Kategori {{ k.replace('_', ' ').strip() }}</p>
+                    <select class="form-select" aria-label="{{ k.replace('_', ' ').strip() }}" , name="{{ k }}"
+                        required>
+                        <option selected value="" disabled>{{ k.replace('_', ' ').strip() }}</option>
+                        {% for i, j in himpunan[k].items(): %}
+                        <option value="{{ k+ " " + i }}">{{ i.replace('_', ' ').strip() }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endfor %}
+                <li><button type="submit" class="btn btn-dark fs-5 fw-semibold my-4">Hitung Rekomendasi</button></li>
+            </div>
+        </form>
+
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
